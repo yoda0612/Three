@@ -1,0 +1,85 @@
+﻿
+@{
+    Layout = null;
+}
+
+<html>
+<head>
+    <title>My first three.js app</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%
+        }
+    </style>
+</head>
+<body>
+    <p>@ViewBag.MinV</p>
+    <p>@ViewBag.MaxV</p>
+    <p>@ViewBag.NumberOfVertices</p>
+    <script src="~/Scripts/three/three.js"></script>
+    <script>
+
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+
+        var wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true, transparent: true });
+
+        var geometry = new THREE.Geometry();
+
+        geometry.vertices.push(
+            @Html.Raw(@ViewBag.VerticesScript)
+        );
+
+        geometry.faces.push(
+            @Html.Raw(@ViewBag.FacesScript)
+        );
+    	var wireframe = new THREE.Mesh( geometry, wireframeMaterial );
+
+        @Html.Raw(@ViewBag.ColorScript)
+
+        //geometry.faces[0].vertexColors[0] = new THREE.Color(0xff0000);
+        //geometry.faces[0].vertexColors[1] = new THREE.Color(0x00ff00);
+        //geometry.faces[0].vertexColors[2] = new THREE.Color(0x00ff00);
+
+
+
+
+        var vertexColorMaterial = new THREE.MeshBasicMaterial( { vertexColors: THREE.VertexColors } );
+
+        var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        //var mesh = new THREE.Mesh(geometry, material);
+        var mesh = new THREE.Mesh(geometry, vertexColorMaterial);
+        mesh.add( wireframe );
+
+
+
+        geometry.computeBoundingSphere();
+
+        scene.add(mesh);
+
+        camera.position.z = 10;
+
+        var animate = function () {
+            requestAnimationFrame(animate);
+
+            //mesh.rotation.x += 0.01;
+            mesh.rotation.y += 0.01;
+
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+    </script>
+</body>
+</html>
